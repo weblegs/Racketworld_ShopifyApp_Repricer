@@ -35,12 +35,12 @@ export async function loader({ request }) {
             edges {
               node {
                 id title handle vendor
+                metafield(namespace: "custom", key: "wl_floor_price") { value }
                 images(first: 1) { edges { node { url } } }
                 variants(first: 1) {
                   edges {
                     node {
                       id price sku
-                      metafield(namespace: "custom", key: "wl_floor_price") { value }
                     }
                   }
                 }
@@ -329,7 +329,7 @@ export default function IndexPage() {
     fd.append("price",          lowest.price.toString());
     fd.append("competitorName", lowest.label);
     fd.append("competitorPrice",lowest.price.toString());
-    if (v.metafield?.value) fd.append("floorPrice", v.metafield.value);
+    if (prod?.metafield?.value) fd.append("floorPrice", prod.metafield.value);
     if (prod) {
       fd.append("productId",    prod.id.replace("gid://shopify/Product/",""));
       fd.append("productTitle", prod.title);
@@ -637,7 +637,7 @@ export default function IndexPage() {
                     const img     = prod?.images?.edges?.[0]?.node?.url || null;
                     const v       = prod?.variants?.edges?.[0]?.node;
                     const cur     = v?.price ? parseFloat(v.price) : sp.myProductPrice;
-                    const floor   = v?.metafield?.value ? parseFloat(v.metafield.value) : null;
+                    const floor   = prod?.metafield?.value ? parseFloat(prod.metafield.value) : null;
                     const comps   = getCompPrices(sp).filter(c => c.displayPrice != null);
                     const lowest  = comps.sort((a,b) => a.displayPrice - b.displayPrice)[0];
                     const diff    = lowest && cur != null ? lowest.displayPrice - cur : null;
