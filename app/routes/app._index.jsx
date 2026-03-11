@@ -421,7 +421,7 @@ export default function IndexPage() {
         .filter(p => p != null && p > 0);
       if (!comps.length) return false;
       const lowest = Math.min(...comps);
-      return sp.myPrice != null && sp.myPrice <= lowest + 0.01;
+      return sp.myProductPrice != null && sp.myProductPrice <= lowest + 0.01;
     }).length;
 
     // Count times we had the lowest price (price drops that matched competitor)
