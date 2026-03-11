@@ -1,0 +1,110 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:dev.sqlite"
+}
+
+model Session {
+  id                  String    @id
+  shop                String
+  state               String
+  isOnline            Boolean   @default(false)
+  scope               String?
+  expires             DateTime?
+  accessToken         String
+  userId              BigInt?
+  firstName           String?
+  lastName            String?
+  email               String?
+  accountOwner        Boolean   @default(false)
+  locale              String?
+  collaborator        Boolean?  @default(false)
+  emailVerified       Boolean?  @default(false)
+  refreshToken        String?
+  refreshTokenExpires DateTime?
+}
+
+model ScrapedPrice {
+  id               String   @id @default(cuid())
+  shop             String
+  myProductUrl     String?
+  myProductPrice   Float?
+  competitor1Name  String?
+  competitor1Url   String?
+  competitor1Price Float?
+  competitor2Name  String?
+  competitor2Url   String?
+  competitor2Price Float?
+  competitor3Name  String?
+  competitor3Url   String?
+  competitor3Price Float?
+  competitor4Name  String?
+  competitor4Url   String?
+  competitor4Price Float?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model ScrapedCompetitor {
+  id         String    @id @default(cuid())
+  shop       String
+  url        String
+  domain     String?
+  pageTitle  String?
+  price      Float?
+  scrapedAt  DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
+
+model PriceHistory {
+  id              String   @id @default(cuid())
+  shop            String
+  productId       String?
+  productTitle    String?
+  competitorName  String?
+  competitorPrice Float?
+  oldPrice        Float?
+  newPrice        Float?
+  changeType      String?  // "Price Drop" | "Price Increase" | "Price Match"
+  variantId       String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model SalesTracking {
+  id                   String    @id @default(cuid())
+  shop                 String
+  productId            String?
+  productTitle         String?
+  oldPrice             Float?
+  newPrice             Float?
+  beforeStartDate      DateTime?
+  beforeEndDate        DateTime?
+  beforeUnitsSold      Int?      @default(0)
+  beforeRevenue        Float?    @default(0)
+  afterStartDate       DateTime?
+  afterEndDate         DateTime?
+  afterUnitsSold       Int?      @default(0)
+  afterRevenue         Float?    @default(0)
+  dataCollectionComplete Boolean @default(false)
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+}
+
+model ShippingCost {
+  id              String   @id @default(cuid())
+  shop            String
+  pdhsports       Float?
+  prodirectsport  Float?
+  tennisnuts      Float?
+  allthingstennis Float?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
