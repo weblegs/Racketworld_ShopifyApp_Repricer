@@ -90,7 +90,10 @@ export async function scrapePrice({ competitorUrls, myProductUrl, myProductPrice
     spData[`competitor${idx}Url`]   = match?.url || null;
   }
 
-  const scrapedPriceRecord = await prisma.scrapedPrice.create({ data: spData });
+  const existing = await prisma.scrapedPrice.findFirst({ where: { shop, myProductUrl } });
+  const scrapedPriceRecord = existing
+    ? await prisma.scrapedPrice.update({ where: { id: existing.id }, data: spData })
+    : await prisma.scrapedPrice.create({ data: spData });
 
   return {
     success: true,

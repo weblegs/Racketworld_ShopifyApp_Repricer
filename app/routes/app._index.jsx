@@ -16,8 +16,8 @@ export async function loader({ request }) {
   const { admin, session } = await authenticate.admin(request);
   const shop = session.shop;
 
-  const [scrapedPrices, priceHistory, shippingCosts, salesTracking] = await Promise.all([
-    prisma.scrapedPrice.findMany({ where: { shop }, orderBy: { createdAt: "desc" }, take: 100 }),
+  const [allScrapedPrices, priceHistory, shippingCosts, salesTracking] = await Promise.all([
+    prisma.scrapedPrice.findMany({ where: { shop }, orderBy: { createdAt: "desc" } }),
     prisma.priceHistory.findMany({ where: { shop }, orderBy: { createdAt: "desc" }, take: 100 }),
     prisma.shippingCost.findFirst({ where: { shop } }),
     prisma.salesTracking.findMany({ where: { shop }, orderBy: { createdAt: "desc" }, take: 50 }),
@@ -58,6 +58,15 @@ export async function loader({ request }) {
   } catch (err) {
     console.error("Error fetching products:", err);
   }
+
+  // Deduplicate by myProductUrl — keep the most recent record per product
+  const seen = new Set();
+  const scrapedPrices = allScrapedPrices.filter(sp => {
+    const key = sp.myProductUrl || sp.id;
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 
   return { shop, shopDomain: shop, scrapedPrices, priceHistory, shippingCosts: shippingCosts || null, salesTracking, products };
 }
