@@ -431,12 +431,17 @@ export default function IndexPage() {
     const recentChanges = priceHistory.filter(h => new Date(h.createdAt) >= sevenDaysAgo);
 
     // Count products where our price matches the lowest competitor
+    // Use live Shopify price (same logic as the comparison table)
     const matchedLowest = scrapedPrices.filter(sp => {
-      const comps = [sp.competitor1Price, sp.competitor2Price, sp.competitor3Price, sp.competitor4Price]
+      const handle = extractHandle(sp.myProductUrl);
+      const prod   = handle ? products.find(p => p.handle === handle) : null;
+      const v      = prod?.variants?.edges?.[0]?.node;
+      const cur    = v?.price ? parseFloat(v.price) : sp.myProductPrice;
+      const comps  = [sp.competitor1Price, sp.competitor2Price, sp.competitor3Price, sp.competitor4Price]
         .filter(p => p != null && p > 0);
-      if (!comps.length) return false;
+      if (!comps.length || cur == null) return false;
       const lowest = Math.min(...comps);
-      return sp.myProductPrice != null && sp.myProductPrice <= lowest + 0.01;
+      return cur <= lowest + 0.01;
     }).length;
 
     // Count times we had the lowest price (price drops that matched competitor)
