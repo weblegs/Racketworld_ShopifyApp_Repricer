@@ -2,7 +2,7 @@
 
 client_id = "2bb0a5602466f2868ab0c5de611dea36"
 name = "wl-repricer"
-application_url = "https://example.com"
+application_url = "https://racketworldshopifyapprepricer-production.up.railway.app"
 embedded = true
 
 [build]
@@ -25,4 +25,4 @@ api_version = "2026-04"
 scopes = "write_products"
 
 [auth]
-redirect_urls = [ "https://example.com/api/auth" ]
+redirect_urls = [ "https://racketworldshopifyapprepricer-production.up.railway.app/auth/callback", "https://racketworldshopifyapprepricer-production.up.railway.app/auth" ]
