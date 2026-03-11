@@ -25,28 +25,36 @@ export async function loader({ request }) {
 
   let products = [];
   try {
-    const res = await admin.graphql(`
-      query {
-        products(first: 250) {
-          edges {
-            node {
-              id title handle vendor
-              images(first: 1) { edges { node { url } } }
-              variants(first: 1) {
-                edges {
-                  node {
-                    id price sku
-                    metafield(namespace: "custom", key: "floor_price") { value }
+    let hasNextPage = true;
+    let cursor = null;
+    while (hasNextPage) {
+      const res = await admin.graphql(`
+        query($cursor: String) {
+          products(first: 250, after: $cursor) {
+            pageInfo { hasNextPage endCursor }
+            edges {
+              node {
+                id title handle vendor
+                images(first: 1) { edges { node { url } } }
+                variants(first: 1) {
+                  edges {
+                    node {
+                      id price sku
+                      metafield(namespace: "custom", key: "floor_price") { value }
+                    }
                   }
                 }
               }
             }
           }
         }
-      }
-    `);
-    const data = await res.json();
-    products = data.data?.products?.edges?.map(e => e.node) || [];
+      `, { variables: { cursor } });
+      const data = await res.json();
+      const page = data.data?.products;
+      products = products.concat(page?.edges?.map(e => e.node) || []);
+      hasNextPage = page?.pageInfo?.hasNextPage || false;
+      cursor = page?.pageInfo?.endCursor || null;
+    }
   } catch (err) {
     console.error("Error fetching products:", err);
   }
@@ -87,6 +95,12 @@ export async function action({ request }) {
       competitorName:       formData.get("competitorName"),
       competitorPriceValue: formData.get("competitorPrice"),
     });
+    // Keep stored price in sync so display doesn't show stale value
+    const spId = formData.get("spId");
+    const newPrice = parseFloat(formData.get("price"));
+    if (result.success && spId && !isNaN(newPrice)) {
+      await prisma.scrapedPrice.update({ where: { id: spId }, data: { myProductPrice: newPrice } });
+    }
     return { success: result.success, action: "updatePrice", result };
   }
 
@@ -301,6 +315,7 @@ export default function IndexPage() {
     if (!lowest) { shopify.toast.show("No competitor prices available", { isError: true }); return; }
     const fd = new FormData();
     fd.append("intent","updatePrice");
+    fd.append("spId",           sp.id);
     fd.append("variantId",      v.id.replace("gid://shopify/ProductVariant/",""));
     fd.append("price",          lowest.price.toString());
     fd.append("competitorName", lowest.label);
@@ -593,7 +608,7 @@ export default function IndexPage() {
                 <thead>
                   <tr>
                     <th>Product</th>
-                    <th>New Price</th>
+                    <th>Current Price</th>
                     <th>Competitor Prices</th>
                     <th>Lowest Price</th>
                     <th>Difference</th>
