@@ -9,10 +9,15 @@ ENV NODE_ENV=production
 
 COPY package.json package-lock.json* ./
 
-RUN npm ci --omit=dev && npm cache clean --force
+# Install all deps (including dev) so prisma generate and build work
+RUN npm ci && npm cache clean --force
 
 COPY . .
 
+RUN npx prisma generate
 RUN npm run build
+
+# Remove dev dependencies after build
+RUN npm prune --omit=dev
 
 CMD ["npm", "run", "docker-start"]
