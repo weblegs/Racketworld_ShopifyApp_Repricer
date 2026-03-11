@@ -40,7 +40,7 @@ export async function loader({ request }) {
                   edges {
                     node {
                       id price sku
-                      metafield(namespace: "custom", key: "floor_price") { value }
+                      metafield(namespace: "custom", key: "wl_floor_price") { value }
                     }
                   }
                 }
