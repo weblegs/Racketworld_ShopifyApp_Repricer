@@ -612,7 +612,7 @@ export default function IndexPage() {
 
   function PriceComparisonPanel() {
     return (
-      <div style={{padding:"20px"}}>
+      <div style={{padding:"20px 0px"}}>
         {/* Toolbar */}
         <div className="pid-toolbar">
           <Text as="h2" variant="headingLg" fontWeight="semibold">Price Comparison</Text>
@@ -758,7 +758,7 @@ export default function IndexPage() {
 
   function CompetitorSitesPanel() {
     return (
-      <div style={{padding:"20px"}}>
+      <div style={{padding:"20px 0px"}}>
         <div className="pid-toolbar">
           <Text as="h2" variant="headingLg" fontWeight="semibold">All Competitors</Text>
           <div className="pid-btn-row">
@@ -875,7 +875,7 @@ export default function IndexPage() {
 
   function PriceHistoryPanel() {
     return (
-      <div style={{padding:"20px"}}>
+      <div style={{padding:"20px 0px"}}>
         <div className="pid-toolbar">
           <Text as="h2" variant="headingLg" fontWeight="semibold">Price History</Text>
           <Text as="p" tone="subdued">{priceHistory.length} price changes recorded</Text>
@@ -938,7 +938,7 @@ export default function IndexPage() {
 
   function SettingsPanel() {
     return (
-      <div style={{padding:"20px"}}>
+      <div style={{padding:"20px 0px"}}>
         <div style={{marginBottom:20}}>
           <Text as="h2" variant="headingLg" fontWeight="semibold">Settings</Text>
         </div>
