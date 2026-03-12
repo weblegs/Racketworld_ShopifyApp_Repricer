@@ -583,7 +583,7 @@ export default function IndexPage() {
             <div>
               {priceHistory.slice(0, 5).map((h, i) => {
                 const isDrop = h.changeType === "Price Drop";
-                const dateStr = new Date(h.createdAt).toLocaleString("en-GB", { day:"2-digit", month:"2-digit", year:"numeric", hour:"2-digit", minute:"2-digit", hour12:true });
+                const dateStr = new Date(h.createdAt).toLocaleString("en-GB", { day:"2-digit", month:"2-digit", year:"numeric", hour:"2-digit", minute:"2-digit", hour12:true }).replace("am","AM").replace("pm","PM");
                 const subtitle = `${h.changeType || "Change"} - Matched ${h.competitorName || "competitor"} pricing • ${dateStr}`;
                 return (
                   <div key={h.id} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"14px 20px",borderBottom: i < 4 ? "1px solid #f3f4f6" : "none"}}>
@@ -845,7 +845,7 @@ export default function IndexPage() {
                           </td>
                         ))}
                         <td style={{color:"#6d7175",fontSize:12,whiteSpace:"nowrap"}}>
-                          {new Date(sp.updatedAt).toLocaleString("en-GB",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit",hour12:true})}
+                          {new Date(sp.updatedAt).toLocaleString("en-GB",{day:"2-digit",month:"2-digit",year:"numeric",hour:"2-digit",minute:"2-digit",hour12:true}).replace("am","AM").replace("pm","PM")}
                         </td>
                         <td>
                           <div style={{display:"flex",gap:6}}>
