@@ -4,15 +4,16 @@
 .pid-tabs {
   display: flex;
   width: 100%;
-  border-bottom: 1px solid #e1e3e5;
+  /* border-bottom: 1px solid #e1e3e5; */
   margin-bottom: 0;
   background: #f6f6f7;
   box-sizing: border-box;
+  padding: 7px;
 }
 .pid-tab {
   flex: 1;
   text-align: center;
-  padding: 14px 8px;
+  padding: 0px 8px;
   font-size: 14px !important;
   font-weight: 400 !important;
   color: #6d7175 !important;
@@ -137,7 +138,7 @@
 
 /* ── Price cells ── */
 .pid-price { font-weight: 600; font-size: 14px; color: #202223; }
-.pid-price-green { color: #008060; font-weight: 700; font-size: 14px; }
+.pid-price-green { color: green; font-weight: 700; font-size: 14px; }
 .pid-price-red { color: #d72c0d; }
 .pid-price-na { color: #8c9196; font-size: 13px; }
 .pid-diff { display: flex; align-items: center; gap: 4px; }
@@ -162,7 +163,7 @@
   padding: 6px 12px;
   border-radius: 6px;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 500; 
   cursor: pointer;
   border: 1px solid transparent;
   transition: all .15s;
@@ -170,7 +171,7 @@
   text-decoration: none;
 }
 .pid-btn-matched {
-  background: #fff;
+  background: rgb(220, 252, 231);
   color: #008060;
   border-color: #008060;
 }
