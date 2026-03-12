@@ -639,7 +639,7 @@ export default function IndexPage() {
                         </td>
                         <td>
                           <div className="pid-comp-list">
-                            {getCompPrices(sp).filter(c => c.price != null).map((c,i) => (
+                            {getCompPrices(sp).filter(c => c.price != null).sort((a,b) => a.displayPrice - b.displayPrice).map((c,i) => (
                               <div className="pid-comp-row" key={i}>
                                 <span className="pid-comp-name-label">{c.label}:</span>
                                 <span className="pid-comp-price-val">{fmt(c.displayPrice)}</span>
