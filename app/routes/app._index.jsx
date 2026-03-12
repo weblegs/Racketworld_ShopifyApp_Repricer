@@ -944,16 +944,29 @@ export default function IndexPage() {
   const ActivePanel = panels[tab];
 
   return (
-    <Page
-      title="Price Intelligence Dashboard"
-      subtitle="Advanced competitor monitoring and automated repricing for your Shopify store"
-      fullWidth
-    >
-      {/* Full-width tabs */}
-      <div className="pid-tabs">
-        {TABS.map((t,i) => (
-          <button key={t} className={`pid-tab${tab===i?" active":""}`} onClick={() => setTab(i)}>{t}</button>
-        ))}
+    <Page fullWidth>
+      {/* Branded header card */}
+      <div style={{background:"#fff",borderRadius:12,border:"1px solid #e5e7eb",padding:"20px 24px",marginBottom:0}}>
+        <div style={{display:"flex",alignItems:"center",gap:14,marginBottom:14}}>
+          <div style={{width:48,height:48,borderRadius:12,background:"linear-gradient(135deg,#6366f1,#4f46e5)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0}}>
+            <span style={{color:"#fff",fontSize:22,fontWeight:700}}>£</span>
+          </div>
+          <div>
+            <div style={{display:"flex",alignItems:"center",gap:6}}>
+              <span style={{fontWeight:700,fontSize:17,color:"#111"}}>PriceSync Pro</span>
+              <span style={{fontSize:18}}>✨</span>
+            </div>
+            <div style={{fontSize:12,color:"#6366f1",fontWeight:500}}>Premium Shopify Price Intelligence Platform</div>
+          </div>
+        </div>
+        <div style={{fontWeight:700,fontSize:15,color:"#111",marginBottom:2}}>Price Intelligence Dashboard</div>
+        <div style={{fontSize:13,color:"#6b7280",marginBottom:16}}>Advanced competitor monitoring and automated repricing for your Shopify store</div>
+        {/* Tabs inside the card */}
+        <div className="pid-tabs" style={{marginBottom:0}}>
+          {TABS.map((t,i) => (
+            <button key={t} className={`pid-tab${tab===i?" active":""}`} onClick={() => setTab(i)}>{t}</button>
+          ))}
+        </div>
       </div>
 
       <ActivePanel />
