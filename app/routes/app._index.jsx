@@ -1033,7 +1033,7 @@ export default function IndexPage() {
         </div>
       </div>
 
-      <ActivePanel />
+      {ActivePanel()}
 
       {/* ── Add Product Modal ── */}
       <Modal
