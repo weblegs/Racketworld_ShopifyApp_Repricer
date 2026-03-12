@@ -81,16 +81,14 @@ export async function loader({ request }) {
       .map(p => p.id.replace("gid://shopify/Product/", ""))
   );
 
-  let salesRevenue = { allTime: 0, sevenDay: 0, fifteenDay: 0 };
+  let salesRevenue = { thirtyDay: 0, sevenDay: 0, fifteenDay: 0 };
   try {
-    const firstPriceChange = priceHistory.length
-      ? new Date(priceHistory[priceHistory.length - 1].createdAt).toISOString()
-      : new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString();
+    const thirtyDaysAgo  = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
     const fifteenDaysAgo = new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString();
     const sevenDaysAgo   = new Date(Date.now() -  7 * 24 * 60 * 60 * 1000).toISOString();
 
-    // Fetch ALL orders since first price change — paginate through all pages
-    let ordersUrl = `https://${shop}/admin/api/2025-04/orders.json?status=any&created_at_min=${firstPriceChange}&limit=250&fields=id,created_at,line_items`;
+    // Only fetch last 30 days — avoids paginating hundreds of pages on every load
+    let ordersUrl = `https://${shop}/admin/api/2025-04/orders.json?status=any&created_at_min=${thirtyDaysAgo}&limit=250&fields=id,created_at,line_items`;
     while (ordersUrl) {
       const ordersRes = await fetch(ordersUrl, { headers: { "X-Shopify-Access-Token": session.accessToken } });
       if (!ordersRes.ok) break;
@@ -100,12 +98,11 @@ export async function loader({ request }) {
         for (const item of order.line_items || []) {
           if (!trackedNumericIds.has(item.product_id?.toString())) continue;
           const revenue = parseFloat(item.price) * item.quantity;
-          salesRevenue.allTime += revenue;
+          salesRevenue.thirtyDay += revenue;
           if (orderDate >= new Date(fifteenDaysAgo)) salesRevenue.fifteenDay += revenue;
           if (orderDate >= new Date(sevenDaysAgo))   salesRevenue.sevenDay   += revenue;
         }
       }
-      // Follow pagination link header
       const link = ordersRes.headers.get("link") || "";
       const next = link.match(/<([^>]+)>;\s*rel="next"/);
       ordersUrl = next ? next[1] : null;
@@ -559,7 +556,7 @@ export default function IndexPage() {
           <div style={{fontWeight:bold,fontSize:20,color:"#111",marginBottom:16}}>Sales Revenue</div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:16}}>
             {[
-              { icon: "+", label: "Total Sales Since First Price Update", sub: "Total revenue from repriced products since the first price change", value: salesRevenue?.allTime || 0 },
+              { icon: "+", label: "30-Day Sales Revenue", sub: "Total revenue from repriced products in the last 30 days", value: salesRevenue?.thirtyDay || 0 },
               { icon: "↗", label: "7-Day Sales Revenue", sub: "Total sales revenue from last 7 days", value: salesRevenue?.sevenDay || 0 },
               { icon: "⚡", label: "15-Day Sales Revenue", sub: "Total sales revenue from last 15 days", value: salesRevenue?.fifteenDay || 0 },
             ].map(({ icon, label, sub, value }) => (
