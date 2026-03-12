@@ -17,7 +17,7 @@ export async function runDailyPriceScraper() {
 
   try {
     // --- 1. Update ScrapedCompetitor records ---
-    const competitors = await prisma.scrapedCompetitor.findMany({ where: { NOT: { url: null } } });
+    const competitors = await prisma.scrapedCompetitor.findMany();
     console.log(`[DailyPriceScraper] Found ${competitors.length} ScrapedCompetitor records`);
 
     for (const comp of competitors) {
@@ -46,16 +46,9 @@ export async function runDailyPriceScraper() {
     }
 
     // --- 2. Update ScrapedPrice competitor price fields ---
-    const scrapedPrices = await prisma.scrapedPrice.findMany({
-      where: {
-        OR: [
-          { NOT: { competitor1Url: null } },
-          { NOT: { competitor2Url: null } },
-          { NOT: { competitor3Url: null } },
-          { NOT: { competitor4Url: null } },
-        ]
-      }
-    });
+    const scrapedPrices = (await prisma.scrapedPrice.findMany()).filter(
+      sp => sp.competitor1Url || sp.competitor2Url || sp.competitor3Url || sp.competitor4Url
+    );
     console.log(`[DailyPriceScraper] Found ${scrapedPrices.length} ScrapedPrice records`);
 
     for (const sp of scrapedPrices) {
