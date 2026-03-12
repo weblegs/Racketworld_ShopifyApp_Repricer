@@ -144,10 +144,10 @@
 .pid-diff { display: flex; align-items: center; gap: 4px; }
 
 /* ── Competitor stacked list ── */
-.pid-comp-list { display: flex; flex-direction: column; gap: 3px; }
-.pid-comp-row { display: flex; gap: 6px; font-size: 13px; white-space: nowrap; }
+.pid-comp-list { display: flex; flex-direction: column; gap: 4px; min-width: 200px; }
+.pid-comp-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; gap: 16px; }
 .pid-comp-name-label { color: #6d7175; }
-.pid-comp-price-val { font-weight: 500; color: #202223; }
+.pid-comp-price-val { font-weight: 500; color: #202223; text-align: right; }
 
 /* ── Competitor table cells (Competitor Sites tab) ── */
 .pid-comp-cell { }
