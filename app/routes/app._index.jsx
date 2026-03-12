@@ -556,7 +556,7 @@ export default function IndexPage() {
 
         {/* Sales Revenue */}
         <div style={{background:"#fff",borderRadius:12,border:"1px solid #e5e7eb",padding:"20px",marginBottom:16}}>
-          <div style={{fontWeight:600,fontSize:15,color:"#111",marginBottom:16}}>Sales Revenue</div>
+          <div style={{fontWeight:bold,fontSize:20,color:"#111",marginBottom:16}}>Sales Revenue</div>
           <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:16}}>
             {[
               { icon: "+", label: "Total Sales Since First Price Update", sub: "Total revenue from repriced products since the first price change", value: salesRevenue?.allTime || 0 },
@@ -578,7 +578,7 @@ export default function IndexPage() {
         {/* Recent changes */}
         <div style={{background:"#fff",borderRadius:12,border:"1px solid #e5e7eb",overflow:"hidden"}}>
           <div style={{padding:"16px 20px",borderBottom:"1px solid #f3f4f6"}}>
-            <span style={{fontWeight:600,fontSize:15,color:"#111"}}>Recent Price Changes</span>
+            <span style={{fontWeight:bold,fontSize:20,color:"#111"}}>Recent Price Changes</span>
             <div style={{fontSize:12,color:"#6b7280",marginTop:2}}>Latest automated price updates from your repricer</div>
           </div>
           {priceHistory.length === 0 ? (
@@ -1021,7 +1021,7 @@ export default function IndexPage() {
           </div>
           <div>
             <div style={{display:"flex",alignItems:"center",gap:6}}>
-              <span style={{fontWeight:700,fontSize:17,color:"#111"}}>PriceSync Pro</span>
+              <span style={{fontWeight:bold,fontSize:24px,color:"#111"}}>PriceSync Pro</span>
               <span style={{fontSize:18}}>✨</span>
             </div>
             <div style={{fontSize:12,color:"#6366f1",fontWeight:500}}>Premium Shopify Price Intelligence Platform</div>
