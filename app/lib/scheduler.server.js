@@ -13,6 +13,13 @@ export function startScheduler() {
 
   console.log("[Scheduler] Starting price scraper cron jobs");
 
+  // TEST: 10:17am (remove after testing)
+  cron.schedule("17 10 * * *", async () => {
+    console.log("[Scheduler] 10:17am TEST trigger — running daily price scraper");
+    try { await runDailyPriceScraper(); }
+    catch (err) { console.error("[Scheduler] 10:17am test job failed:", err); }
+  }, { timezone: "Europe/London" });
+
   // 9am daily
   cron.schedule("0 9 * * *", async () => {
     console.log("[Scheduler] 9am trigger — running daily price scraper");
