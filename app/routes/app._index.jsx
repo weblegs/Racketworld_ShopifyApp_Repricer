@@ -6,7 +6,6 @@ import prisma from "../db.server.js";
 import { scrapePrice } from "../lib/scrapePrice.server.js";
 import { updateShopifyProductPrice } from "../lib/updateShopifyProductPrice.server.js";
 import { runDailyPriceScraper } from "../lib/dailyPriceScraper.server.js";
-import { SalesDashboardCharts } from "../components/SalesDashboardCharts.jsx";
 import appCssUrl from "../styles/app.css?url";
 
 export const links = () => [{ rel: "stylesheet", href: appCssUrl }];
@@ -540,17 +539,6 @@ export default function IndexPage() {
           )}
         </div>
 
-        {/* Sales chart */}
-        <div style={{marginTop:20}}>
-          <Card>
-            <div style={{padding:"16px 16px 0"}}>
-              <Text as="h3" variant="headingMd">Sales Performance After Price Changes</Text>
-            </div>
-            <div style={{padding:"16px"}}>
-              <SalesDashboardCharts salesTracking={salesTracking} />
-            </div>
-          </Card>
-        </div>
       </div>
     );
   }
