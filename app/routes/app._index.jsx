@@ -68,11 +68,17 @@ export async function loader({ request }) {
   });
 
   // ── Sales Revenue from Shopify Orders API ────────────────────────────────
-  // Get tracked product IDs so we only count relevant sales
-  const trackedProductIds = new Set(
+  // Build a set of numeric Shopify product IDs we're tracking
+  // products array has GID like "gid://shopify/Product/12345" — extract numeric part
+  const trackedHandles = new Set(
     allScrapedPrices
       .map(sp => sp.myProductUrl?.split("/products/")[1]?.split("?")[0])
       .filter(Boolean)
+  );
+  const trackedNumericIds = new Set(
+    products
+      .filter(p => trackedHandles.has(p.handle))
+      .map(p => p.id.replace("gid://shopify/Product/", ""))
   );
 
   let salesRevenue = { allTime: 0, sevenDay: 0, fifteenDay: 0 };
@@ -93,11 +99,8 @@ export async function loader({ request }) {
       for (const order of ordersData.orders || []) {
         const orderDate = new Date(order.created_at);
         for (const item of order.line_items || []) {
-          // Match by product handle or product_id
-          const handle = item.handle || item.product_id?.toString();
-          const isTracked = trackedProductIds.has(handle) ||
-            allScrapedPrices.some(sp => sp.myProductUrl?.includes(`/products/${item.handle || ""}`));
-          if (!isTracked) continue;
+          // Match by numeric product_id against our tracked set
+          if (!trackedNumericIds.has(item.product_id?.toString())) continue;
           const revenue = parseFloat(item.price) * item.quantity;
           salesRevenue.allTime += revenue;
           if (orderDate >= new Date(fifteenDaysAgo)) salesRevenue.fifteenDay += revenue;
