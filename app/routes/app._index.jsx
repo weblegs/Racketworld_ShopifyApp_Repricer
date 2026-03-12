@@ -89,17 +89,15 @@ export async function loader({ request }) {
     const fifteenDaysAgo = new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString();
     const sevenDaysAgo   = new Date(Date.now() -  7 * 24 * 60 * 60 * 1000).toISOString();
 
-    // Fetch orders since first price change (max 250)
-    const ordersRes = await fetch(
-      `https://${shop}/admin/api/2025-04/orders.json?status=any&created_at_min=${firstPriceChange}&limit=250&fields=id,created_at,line_items`,
-      { headers: { "X-Shopify-Access-Token": session.accessToken } }
-    );
-    if (ordersRes.ok) {
+    // Fetch ALL orders since first price change — paginate through all pages
+    let ordersUrl = `https://${shop}/admin/api/2025-04/orders.json?status=any&created_at_min=${firstPriceChange}&limit=250&fields=id,created_at,line_items`;
+    while (ordersUrl) {
+      const ordersRes = await fetch(ordersUrl, { headers: { "X-Shopify-Access-Token": session.accessToken } });
+      if (!ordersRes.ok) break;
       const ordersData = await ordersRes.json();
       for (const order of ordersData.orders || []) {
         const orderDate = new Date(order.created_at);
         for (const item of order.line_items || []) {
-          // Match by numeric product_id against our tracked set
           if (!trackedNumericIds.has(item.product_id?.toString())) continue;
           const revenue = parseFloat(item.price) * item.quantity;
           salesRevenue.allTime += revenue;
@@ -107,6 +105,10 @@ export async function loader({ request }) {
           if (orderDate >= new Date(sevenDaysAgo))   salesRevenue.sevenDay   += revenue;
         }
       }
+      // Follow pagination link header
+      const link = ordersRes.headers.get("link") || "";
+      const next = link.match(/<([^>]+)>;\s*rel="next"/);
+      ordersUrl = next ? next[1] : null;
     }
   } catch (err) {
     console.error("Error fetching orders for revenue:", err);
