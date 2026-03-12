@@ -67,7 +67,49 @@ export async function loader({ request }) {
     return true;
   });
 
-  return { shop, shopDomain: shop, scrapedPrices, priceHistory, shippingCosts: shippingCosts || null, salesTracking, products };
+  // ── Sales Revenue from Shopify Orders API ────────────────────────────────
+  // Get tracked product IDs so we only count relevant sales
+  const trackedProductIds = new Set(
+    allScrapedPrices
+      .map(sp => sp.myProductUrl?.split("/products/")[1]?.split("?")[0])
+      .filter(Boolean)
+  );
+
+  let salesRevenue = { allTime: 0, sevenDay: 0, fifteenDay: 0 };
+  try {
+    const firstPriceChange = priceHistory.length
+      ? new Date(priceHistory[priceHistory.length - 1].createdAt).toISOString()
+      : new Date(Date.now() - 365 * 24 * 60 * 60 * 1000).toISOString();
+    const fifteenDaysAgo = new Date(Date.now() - 15 * 24 * 60 * 60 * 1000).toISOString();
+    const sevenDaysAgo   = new Date(Date.now() -  7 * 24 * 60 * 60 * 1000).toISOString();
+
+    // Fetch orders since first price change (max 250)
+    const ordersRes = await fetch(
+      `https://${shop}/admin/api/2025-04/orders.json?status=any&created_at_min=${firstPriceChange}&limit=250&fields=id,created_at,line_items`,
+      { headers: { "X-Shopify-Access-Token": session.accessToken } }
+    );
+    if (ordersRes.ok) {
+      const ordersData = await ordersRes.json();
+      for (const order of ordersData.orders || []) {
+        const orderDate = new Date(order.created_at);
+        for (const item of order.line_items || []) {
+          // Match by product handle or product_id
+          const handle = item.handle || item.product_id?.toString();
+          const isTracked = trackedProductIds.has(handle) ||
+            allScrapedPrices.some(sp => sp.myProductUrl?.includes(`/products/${item.handle || ""}`));
+          if (!isTracked) continue;
+          const revenue = parseFloat(item.price) * item.quantity;
+          salesRevenue.allTime += revenue;
+          if (orderDate >= new Date(fifteenDaysAgo)) salesRevenue.fifteenDay += revenue;
+          if (orderDate >= new Date(sevenDaysAgo))   salesRevenue.sevenDay   += revenue;
+        }
+      }
+    }
+  } catch (err) {
+    console.error("Error fetching orders for revenue:", err);
+  }
+
+  return { shop, shopDomain: shop, scrapedPrices, priceHistory, shippingCosts: shippingCosts || null, salesTracking, products, salesRevenue };
 }
 
 // ─── Action ───────────────────────────────────────────────────────────────────
@@ -240,7 +282,7 @@ const SearchIcon = () => (
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function IndexPage() {
-  const { scrapedPrices, priceHistory, shippingCosts: initShipping, salesTracking, products, shopDomain } = useLoaderData();
+  const { scrapedPrices, priceHistory, shippingCosts: initShipping, salesTracking, products, shopDomain, salesRevenue } = useLoaderData();
 
   const submit = useSubmit();
   const nav    = useNavigation();
@@ -505,6 +547,27 @@ export default function IndexPage() {
               <div style={{fontSize:12,color:"#6b7280"}}>{desc}</div>
             </div>
           ))}
+        </div>
+
+        {/* Sales Revenue */}
+        <div style={{background:"#fff",borderRadius:12,border:"1px solid #e5e7eb",padding:"20px",marginBottom:16}}>
+          <div style={{fontWeight:600,fontSize:15,color:"#111",marginBottom:16}}>Sales Revenue</div>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:16}}>
+            {[
+              { icon: "+", label: "Total Sales Since First Price Update", sub: "Total revenue from repriced products since the first price change", value: salesRevenue?.allTime || 0 },
+              { icon: "↗", label: "7-Day Sales Revenue", sub: "Total sales revenue from last 7 days", value: salesRevenue?.sevenDay || 0 },
+              { icon: "⚡", label: "15-Day Sales Revenue", sub: "Total sales revenue from last 15 days", value: salesRevenue?.fifteenDay || 0 },
+            ].map(({ icon, label, sub, value }) => (
+              <div key={label} style={{border:"1px solid #e5e7eb",borderRadius:10,padding:"18px"}}>
+                <div style={{width:40,height:40,borderRadius:10,background:"#111",display:"flex",alignItems:"center",justifyContent:"center",marginBottom:12}}>
+                  <span style={{color:"#fff",fontSize:18,fontWeight:700}}>{icon}</span>
+                </div>
+                <div style={{fontSize:22,fontWeight:700,color:"#111",marginBottom:4}}>£{value.toFixed(2)}</div>
+                <div style={{fontSize:12,fontWeight:600,color:"#374151",marginBottom:6}}>{label}</div>
+                <div style={{fontSize:12,color:"#6b7280"}}>{sub}</div>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Recent changes */}
