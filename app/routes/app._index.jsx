@@ -513,46 +513,29 @@ export default function IndexPage() {
         <div style={{background:"#fff",borderRadius:12,border:"1px solid #e5e7eb",overflow:"hidden"}}>
           <div style={{padding:"16px 20px",borderBottom:"1px solid #f3f4f6"}}>
             <span style={{fontWeight:600,fontSize:15,color:"#111"}}>Recent Price Changes</span>
+            <div style={{fontSize:12,color:"#6b7280",marginTop:2}}>Latest automated price updates from your repricer</div>
           </div>
           {priceHistory.length === 0 ? (
             <div style={{padding:"32px",textAlign:"center",color:"#6b7280",fontSize:13}}>No price changes yet. Add products to start monitoring.</div>
           ) : (
-            <div className="pid-table-wrap">
-              <table className="pid-table">
-                <thead>
-                  <tr>
-                    <th>Date</th><th>Product</th><th>Competitor</th>
-                    <th>Comp. Price</th><th>Old Price</th><th style={{fontWeight:700}}>New Price</th><th>Saving</th><th>Change</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {priceHistory.slice(0,20).map(h => {
-                    const saving = h.oldPrice != null && h.newPrice != null ? (h.oldPrice - h.newPrice) : null;
-                    const isDrop = h.changeType === "Price Drop";
-                    const isRise = h.changeType === "Price Increase";
-                    return (
-                      <tr key={h.id}>
-                        <td style={{color:"#6b7280",whiteSpace:"nowrap",fontSize:12}}>{new Date(h.createdAt).toLocaleDateString("en-GB")}</td>
-                        <td style={{fontWeight:500,color:"#111"}}>{h.productTitle || "—"}</td>
-                        <td style={{color:"#6b7280",fontSize:13}}>{h.competitorName || "—"}</td>
-                        <td style={{color:"#374151"}}>{fmt(h.competitorPrice) || "—"}</td>
-                        <td style={{color:"#6b7280"}}>{fmt(h.oldPrice) || "—"}</td>
-                        <td style={{fontWeight:700,color:"#111"}}>{fmt(h.newPrice) || "—"}</td>
-                        <td style={{fontWeight:600,color: saving == null ? "#6b7280" : saving > 0 ? "#d97706" : saving < 0 ? "#d97706" : "#6b7280"}}>
-                          {saving != null ? (saving >= 0 ? `+${fmt(saving)}` : fmt(saving)) : "—"}
-                        </td>
-                        <td>
-                          {isDrop
-                            ? <span style={{display:"inline-flex",alignItems:"center",gap:4,background:"#d1fae5",color:"#065f46",fontSize:12,fontWeight:600,padding:"3px 10px",borderRadius:20}}>↓ Drop</span>
-                            : isRise
-                            ? <span style={{display:"inline-flex",alignItems:"center",gap:4,background:"#fef3c7",color:"#92400e",fontSize:12,fontWeight:600,padding:"3px 10px",borderRadius:20}}>↑ Rise</span>
-                            : <span style={{display:"inline-flex",alignItems:"center",gap:4,background:"#f3f4f6",color:"#374151",fontSize:12,fontWeight:600,padding:"3px 10px",borderRadius:20}}>Match</span>}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+            <div>
+              {priceHistory.slice(0, 5).map((h, i) => {
+                const isDrop = h.changeType === "Price Drop";
+                const dateStr = new Date(h.createdAt).toLocaleString("en-GB", { day:"numeric", month:"numeric", year:"numeric", hour:"2-digit", minute:"2-digit", second:"2-digit" });
+                const subtitle = `${h.changeType || "Change"} - Matched ${h.competitorName || "competitor"} pricing • ${dateStr}`;
+                return (
+                  <div key={h.id} style={{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"14px 20px",borderBottom: i < 4 ? "1px solid #f3f4f6" : "none"}}>
+                    <div style={{flex:1,minWidth:0}}>
+                      <div style={{fontWeight:600,fontSize:14,color:"#111",marginBottom:2}}>{h.productTitle || "—"}</div>
+                      <div style={{fontSize:12,color: isDrop ? "#ef4444" : "#f59e0b"}}>{subtitle}</div>
+                    </div>
+                    <div style={{textAlign:"right",flexShrink:0,marginLeft:24}}>
+                      <div style={{fontSize:13,color:"#9ca3af",textDecoration:"line-through"}}>{fmt(h.oldPrice) || "—"}</div>
+                      <div style={{fontSize:15,fontWeight:700,color: isDrop ? "#ef4444" : "#f59e0b"}}>{fmt(h.newPrice) || "—"}</div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           )}
         </div>
