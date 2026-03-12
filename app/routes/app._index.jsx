@@ -516,7 +516,7 @@ export default function IndexPage() {
         desc: "Times you had the lowest price",
         bg: "linear-gradient(135deg,#d1fae5,#a7f3d0)",
         iconBg: "#059669",
-        icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>,
+        icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><text x="6" y="18" font-size="16" fill="white">£</text></svg>,
       },
       {
         value: recentChanges.length,
@@ -524,7 +524,7 @@ export default function IndexPage() {
         desc: "Automated price changes this week",
         bg: "linear-gradient(135deg,#fef3c7,#fde68a)",
         iconBg: "#d97706",
-        icon: <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>,
+        icon: <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>,
       },
       {
         value: scrapedPrices.length,
