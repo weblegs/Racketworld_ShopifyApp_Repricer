@@ -1021,7 +1021,7 @@ export default function IndexPage() {
           </div>
           <div>
             <div style={{display:"flex",alignItems:"center",gap:6}}>
-              <span style={{fontWeight:bold,fontSize:24px,color:"#111"}}>PriceSync Pro</span>
+              <span style={{fontWeight:bold,fontSize:24,color:"#111"}}>PriceSync Pro</span>
               <span style={{fontSize:18}}>✨</span>
             </div>
             <div style={{fontSize:12,color:"#6366f1",fontWeight:500}}>Premium Shopify Price Intelligence Platform</div>
